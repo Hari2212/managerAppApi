@@ -1,10 +1,11 @@
 const subcategory = require('../models/subcategory.model');
+const expenditures = require('../models/expenditures.model');
 const mongoose = require('mongoose');
 exports.addSubCategory = async (req, res) => {
     try {
         const scatry = new subcategory({
             title: req.body.subCategoryTitle,
-            userId: req.body.userId,
+            userId: req.user._id,
             categoryId: req.body.categoryId
         });
 
@@ -28,11 +29,11 @@ exports.addSubCategory = async (req, res) => {
 }
 exports.getAllSubCategory = async (req, res) => {
     try {
-        console.log(req.query.userId)
+        console.log("Prinitng data", req.user._id)
         subcategory.aggregate([
             {
                 $match: {
-                    userId: new mongoose.Types.ObjectId(req.query.userId)
+                    userId: new mongoose.Types.ObjectId(req.user._id)
                 }
             },
             {
@@ -81,7 +82,7 @@ exports.getAllSubCategory = async (req, res) => {
 }
 exports.updateSubCategory = async (req, res) => {
     try {
-        subcategory.updateOne({ _id: req.body.subCategoryId }, { $set: { title: req.body.title,categoryId : req.body.categoryId } })
+        subcategory.updateOne({ _id: req.body.subCategoryId }, { $set: { title: req.body.title, categoryId: req.body.categoryId,updateddAt: Date.now() } })
             .then(x => {
                 return res.status(200).json({
                     "status": "200",
@@ -101,13 +102,24 @@ exports.updateSubCategory = async (req, res) => {
 }
 exports.deleteSubCategory = async (req, res) => {
     try {
-        subcategory.findByIdAndDelete({ _id: req.params.subCategoryId }).then(x => {
+        const expenditure = await expenditures.find({ subcategoryId: req.params.subCategoryId });
+        if (expenditure.length > 0) {
             return res.status(200).json({
                 "status": "200",
                 "success": true,
-                "msg": "Subcategory Deleted successfully!!!",
+                "res" : 0,
+                "msg": "Subcategory Contains expenditures datas!!!",
             })
-        })
+        } else {
+            subcategory.findByIdAndDelete({ _id: req.params.subCategoryId }).then(x => {
+                return res.status(200).json({
+                    "status": "200",
+                    "success": true,
+                    "res" : 1,
+                    "msg": "Subcategory Deleted successfully!!!",
+                })
+            })
+        }
     } catch (err) {
         return res.status(422).json({
             "statusCode": "422",
@@ -122,7 +134,7 @@ exports.deleteSubCategory = async (req, res) => {
 
 exports.getcategoryBasedSubCategory = async (req, res) => {
     try {
-        subcategory.find({ _id: req.query.subCategoryId }).then(x => {
+        subcategory.find({ categoryId: req.query.categoryId }).then(x => {
             return res.status(200).json({
                 "status": "200",
                 "success": true,

@@ -2,16 +2,13 @@ const User = require('../models/user.model');
 const _ = require("lodash");
 exports.login = async (req, res) => {
     try {
-        // res.send("Welcome");
-        // return;
-        // const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
         User.findOne({ email: req.body.email }).then(y => {
             if (y) {
                 return res.status(200).json({
                     "status": "200",
                     "success": true,
-                    res: y,
-                    "msg": "Already Send Successfully",
+                    // res: y,
+                    "msg": "Otp Send Successfully",
                 })
             } else {
 
@@ -24,7 +21,7 @@ exports.login = async (req, res) => {
                     return res.status(200).json({
                         "status": "200",
                         "success": true,
-                        res: x,
+                        // res: x,
                         "msg": "Otp Send Successfully",
                     })
                 })
@@ -49,7 +46,8 @@ exports.verifyotp = async (req, res) => {
                 let payload = _.pick(user, ["_id", "email"]);
                 const tkn = user.authToken(payload);
                 response = {
-                    token: "Bearer " + tkn
+                    token: "Bearer " + tkn,
+                    userId : user._id
                 }
                 return res.status(200).json({
                     "status": "200",
@@ -58,8 +56,8 @@ exports.verifyotp = async (req, res) => {
                     "msg": "Otp Verfied Successfully",
                 })
             } else {
-                return res.status(422).json({
-                    statusCode: "422",
+                return res.status(400).json({
+                    statusCode: "400",
                     msg: "Otp is invalid",
                     success: "false",
                     errors: { errors: ["error in verification Process"] },

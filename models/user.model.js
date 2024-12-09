@@ -26,7 +26,7 @@ userSchema.methods.authToken = function (payload){
     console.log("getting data",process.env.SECRET)
     const token = jwt.sign(payload,process.env.SECRET,{
         algorithm : "HS512",
-        expiresIn : "43000"
+        expiresIn : "1d"
     })
     return token;
 }

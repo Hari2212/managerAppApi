@@ -25,8 +25,7 @@ const expendituresSchema = mongoose.Schema({
     },
     subcategoryId : {
         type : mongoose.Schema.Types.ObjectId,
-        required : true,
-        ref : 'subcategorys'
+        required : false,
     }
 })
 

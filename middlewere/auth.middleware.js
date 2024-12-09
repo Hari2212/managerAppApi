@@ -43,10 +43,9 @@ module.exports = function auth(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.SECRET, { algorithms: ['HS512'] });
         req.user = decoded;
-        console.log("Decoded Token:", decoded);
         next();
     } catch (e) {
-        console.error('JWT verification failed:', e);
+        // console.error('JWT verification failed:', e);
         res.status(400).send('Invalid token');
     }
 };
